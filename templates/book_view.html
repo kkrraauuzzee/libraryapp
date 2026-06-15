@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }} – Электронная библиотека{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <img src="{{ url_for('static', filename='covers/' ~ book.cover.filename) }}" alt="{{ book.title }} cover" class="img-fluid rounded shadow-sm mb-3">
+    </div>
+    <div class="col-md-8">
+        <h2>{{ book.title }}</h2>
+        <p><strong>Автор:</strong> {{ book.author }}</p>
+        <p><strong>Издательство:</strong> {{ book.publisher }}</p>
+        <p><strong>Год:</strong> {{ book.year }}</p>
+        <p><strong>Страницы:</strong> {{ book.pages }}</p>
+        <p><strong>Жанры:</strong> {{ ', '.join(book.genres_list) }}</p>
+        <hr>
+        <h5>Описание</h5>
+        <div>{{ description_html|safe }}</div>
+    </div>
+</div>
+<hr>
+<h3>Рецензии</h3>
+{% if user_review %}
+    <div class="mb-3 border rounded p-3 bg-light">
+        <h5>Ваша рецензия</h5>
+        <p><strong>Оценка:</strong> {{ user_review.rating }}</p>
+        <div>{{ user_review_html|safe }}</div>
+        {% if user_review.status.name == 'pending' %}
+            <p class="text-warning mb-0">Ваша рецензия находится на модерации.</p>
+        {% elif user_review.status.name == 'rejected' %}
+            <p class="text-danger mb-0">Ваша рецензия была отклонена модератором.</p>
+        {% endif %}
+    </div>
+{% elif current_user.is_authenticated and current_user.role.name in ['user', 'moderator', 'administrator'] %}
+    <a class="btn btn-primary mb-3" href="{{ url_for('add_review', book_id=book.id) }}">Написать рецензию</a>
+{% endif %}
+
+{% if reviews %}
+    {% for review, html in reviews %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ review.user.full_name() }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Оценка: {{ review.rating }} - {{ review.created_at.strftime('%Y-%m-%d') }}</h6>
+                <div class="card-text">{{ html|safe }}</div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>Одобренных рецензий пока нет.</p>
+{% endif %}
+{% endblock %}

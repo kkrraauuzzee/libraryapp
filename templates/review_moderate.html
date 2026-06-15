@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Модерация рецензии – Электронная библиотека{% endblock %}
+
+{% block content %}
+<h1>Модерация рецензии</h1>
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">Книга: {{ review.book.title }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Пользователь: {{ review.user.full_name() }}</h6>
+        <p><strong>Оценка:</strong> {{ review.rating }}</p>
+        <p><strong>Дата:</strong> {{ review.created_at.strftime('%Y-%m-%d') }}</p>
+        <hr>
+        <div>{{ review_html|safe }}</div>
+    </div>
+</div>
+<form method="post">
+    <button type="submit" name="action" value="approve" class="btn btn-success">Одобрить</button>
+    <button type="submit" name="action" value="reject" class="btn btn-danger">Отклонить</button>
+    <a class="btn btn-secondary" href="{{ url_for('moderate_reviews') }}">Назад</a>
+</form>
+{% endblock %}

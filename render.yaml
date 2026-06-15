@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: libraryapp
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python seed.py && python -m gunicorn "app:create_app()" --bind 0.0.0.0:$PORT
+    envVars:
+      - key: SECRET_KEY
+        value: libraryapp-secret-123321

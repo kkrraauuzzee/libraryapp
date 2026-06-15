@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои рецензии – Электронная библиотека{% endblock %}
+
+{% block content %}
+<h1>Мои рецензии</h1>
+{% if reviews %}
+    {% for review, html in reviews %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{{ url_for('view_book', book_id=review.book.id) }}">{{ review.book.title }}</a>
+                </h5>
+                <h6 class="card-subtitle mb-2 text-muted">Оценка: {{ review.rating }} -
+                    {% if review.status.name == 'pending' %}
+                        На рассмотрении
+                    {% elif review.status.name == 'approved' %}
+                        Одобрена
+                    {% elif review.status.name == 'rejected' %}
+                        Отклонена
+                    {% else %}
+                        {{ review.status.name }}
+                    {% endif %}
+                </h6>
+                <div class="card-text">{{ html|safe }}</div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>Вы ещё не написали ни одной рецензии.</p>
+{% endif %}
+{% endblock %}
